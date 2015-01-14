@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HTML5 Video Tiles Game</title> 
+<style>
+#box{
+  width:1366px;
+  height:740px;
+  margin:0px auto;
+}
+.tile{
+  border:4px solid #fff;
+  float:left;
+}
+</style>
+</head>
+<body>
+<div style="display:none">
+    <video id="source-vid" autoplay loop="true"> 
+       <source src="video/linktovideo.mp4" type="video/mp4"/>
+    </video> 
+</div>
+<div id="box"></div>
+<script src="http://code.jquery.com/jquery-1.7.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<script type="text/javascript">
+    
+    ROWS = 3;
+    COLS = 3;
+    _video_width = 1280;
+    _video_height = 720;
+    tiles(_video_width,_video_height, ROWS, COLS);
+    
+    var video = $("#source-vid")[0];
+    update(video);
+
+    function update(video) {
+
+      tiles(_video_width,_video_height,ROWS, COLS, video);
+      setTimeout(function() { update(video) }, 33);
+    }
+
+    // Function to shuffle array 
+    // Array to shuffle one dimensional array 
+
+    function shuffleArray(array) {
+      for (var i = array.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+      }
+      return array;
+    }
+    
+    // Function to create Tiles 
+    // Create blank tiles initially 
+    // When video source is available add the frames to tiles
+
+    function tiles(w, h, r, c, source) {
+        var tileW = Math.round(w / c);
+        var tileH = Math.round(h / r);
+        var twodArr = [];
+        for(var ri = 0; ri < r; ri += 1) {
+          var arr=[];
+
+          for(var ci = 0; ci < c; ci += 1) {
+            // Create Tiles
+            if (typeof source === 'undefined') {
+              var tile = $('<canvas class="tile" id="tile' + ri + ci + '" height="' + tileH + '" width="' + tileW + '"></canvas>').get(0);
+              arr.push(tile);
+            } else {
+
+            // Add frames to tiles
+                var getit = $('#tile' + ri + ci).get(0);
+                context = getit.getContext('2d');
+                context.drawImage(source, ci*tileW, ri*tileH, tileW, tileH, 0, 0, tileW, tileH);
+            }
+          }
+          // Shuffle single dimensional tiles   
+          arr = shuffleArray(arr);
+          twodArr.push(arr);
+        }   
+        // Shuffle two dimensional Tiles 
+        twodarr = shuffleArray(twodArr);
+        // Iterate over 2D array and add tiles to box 
+        twodarr.forEach(function(tile){
+            tile.forEach(function(tile_element){
+              $("#box").append(tile_element);
+            })
+        })
+
+    }
+
+    // Selection Variable to determine selections 
+    var selected = 0;
+    // Variables to Store selected Canvases
+    var _canvasOne , _cloneOne , _cloneTwo, _canvasTwo;
+        
+    $(document).on('click','canvas',function(){
+      console.log(this.id);
+      console.log($('#'+this.id).index())
+
+      if(!selected){
+        // If not selected Add this tile as canvasOne and increment selection variable
+        _canvasOne = $('#'+this.id);
+        _cloneOne = _canvasOne.clone();
+         selected++;
+      }
+      else{
+        // If selected , clone Current Tiles
+        // Swap both tiles with clones
+
+        _canvasTwo = $('#'+this.id);
+        _cloneTwo = _canvasTwo.clone();
+        _canvasOne.replaceWith(_cloneTwo);
+        _canvasTwo.replaceWith(_cloneOne);
+        
+        // Check if game ends or not    
+        checkPuzzle();
+        // Reset selection variable
+        selected = 0;
+      }
+    })
+
+    // Function to Check Whether Game is over or not
+    function checkPuzzle(){
+        
+        // Iterate over Rows and coloumns
+        for(var ri = 0; ri < ROWS; ri += 1) {
+          for(var ci = 0; ci < COLS; ci += 1) {
+                // Get the index of each tile 
+                // If it equals current_row * col_no + current_coloumn
+                // Then iterate over next tile
+                // Else return null
+                var end_val = $('#tile' + ri + ci).index();
+                console.log(end_val)
+                if(ri*COLS+ci !== end_val){
+                  console.log('Not Okay')
+                  return
+                }
+                
+          }
+        }   
+        // Alert Game Over at the end 
+        alert('Game over')
+        console.log('Game Over')
+    }
+
+    // Pause Video on Enter Key Press
+    window.onkeyup = function(e){
+      var video = $("#source-vid")[0]; 
+      if(e.keyCode === 13)
+          if(video.paused)
+            video.play()
+          else
+            video.pause();
+    }
+</script>
+</body>
+</html>
