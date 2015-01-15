@@ -16,11 +16,12 @@ body{
   float:left;
 }
 canvas:hover{
-  opacity: 0.5;
+  opacity: 0.9;
 }
 .selected {
   opacity: 0.5;
-  border: #000 solid 4px;
+  border:4px solid green;
+
 }
 </style>
 </head>
@@ -117,7 +118,9 @@ canvas:hover{
       if(!selected){
         // If not selected Add this tile as canvasOne and increment selection variable
         _canvasOne = $('#'+this.id);
+        _canvasOne.width -= 10; 
         _cloneOne = _canvasOne.clone();
+
         _canvasOne.addClass("selected");
          selected++;
       }
@@ -126,10 +129,12 @@ canvas:hover{
         // Swap both tiles with clones
 
         _canvasTwo = $('#'+this.id);
-        _cloneTwo = _canvasTwo.clone();
-        _canvasOne.replaceWith(_cloneTwo);
-        _canvasTwo.replaceWith(_cloneOne);
+        console.log(_cloneOne )
         
+        _cloneTwo = _canvasTwo.clone();
+        _canvasTwo.replaceWith(_cloneOne);
+        _canvasOne.replaceWith(_cloneTwo);
+       
         // Check if game ends or not    
         checkPuzzle();
         // Reset selection variable
@@ -159,8 +164,9 @@ canvas:hover{
         }   
         // Alert Game Over at the end 
         $(".audioControls").trigger('play');
-        alert('Congrats ! Finished successfully ')
         console.log('Game Over')
+        alert('Congrats ! Finished successfully ')
+
     }
 
     setInterval(function () {alert("Game Over")}, 180000);
