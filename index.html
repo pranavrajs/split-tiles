@@ -3,6 +3,9 @@
 <head>
 <title>HTML5 Video Tiles Game</title> 
 <style>
+body{
+
+}
 #box{
   width:1366px;
   height:740px;
@@ -12,21 +15,31 @@
   border:4px solid #fff;
   float:left;
 }
+canvas:hover{
+  opacity: 0.5;
+}
+.selected {
+  opacity: 0.5;
+  border: #000 solid 4px;
+}
 </style>
 </head>
 <body>
 <div style="display:none">
-    <video id="source-vid" autoplay loop="true"> 
-       <source src="video/linktovideo.mp4" type="video/mp4"/>
+    <video id="source-vid" autoplay loop="true" controls muted> 
+       <source src="video/messi.mp4" type="video/mp4"/>
     </video> 
+    <audio class="audioControls" controls preload="none"> 
+      <source src="audio/applause.mp3" type="audio/mpeg">
+    </audio>
 </div>
 <div id="box"></div>
 <script src="http://code.jquery.com/jquery-1.7.min.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
 <script type="text/javascript">
     
-    ROWS = 3;
-    COLS = 3;
+    ROWS = 5;
+    COLS = 5;
     _video_width = 1280;
     _video_height = 720;
     tiles(_video_width,_video_height, ROWS, COLS);
@@ -105,6 +118,7 @@
         // If not selected Add this tile as canvasOne and increment selection variable
         _canvasOne = $('#'+this.id);
         _cloneOne = _canvasOne.clone();
+        _canvasOne.addClass("selected");
          selected++;
       }
       else{
@@ -123,6 +137,7 @@
       }
     })
 
+   
     // Function to Check Whether Game is over or not
     function checkPuzzle(){
         
@@ -143,10 +158,12 @@
           }
         }   
         // Alert Game Over at the end 
-        alert('Game over')
+        $(".audioControls").trigger('play');
+        alert('Congrats ! Finished successfully ')
         console.log('Game Over')
     }
 
+    setInterval(function () {alert("Game Over")}, 180000);
     // Pause Video on Enter Key Press
     window.onkeyup = function(e){
       var video = $("#source-vid")[0]; 
