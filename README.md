@@ -8,4 +8,6 @@ Replace the link in <source > with video/you-video-name.mp4
 
 Note : Works with MP4 only 
 
+![Mosaic](/img/rearrange.png)
+
 
