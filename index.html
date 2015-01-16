@@ -1,57 +1,222 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>HTML5 Video Tiles Game</title> 
-<style>
-body{
+  <title>HTML5 Video Tiles Game</title> 
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+  <style>
+  @import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700);
+  body{
+    background: #ecf0f1;
+    font-family: 'Source Sans Pro';
+  }
+  #box{
+    width:900px;
+    height:520px;
+    position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  }
+  #display_video{
+    z-index: 10000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
-}
-#box{
-  width:1366px;
-  height:740px;
-  margin:0px auto;
-}
-.tile{
-  border:4px solid #fff;
-  float:left;
-}
-canvas:hover{
-  opacity: 0.9;
-}
-.selected {
-  opacity: 0.5;
-  border:4px solid green;
+  }
+  .split-tile{
+    border:4px solid #fff;
+    float:left;
+  }
+  canvas:hover{
+    opacity: 0.9;
+  }
+  .selected {
+    opacity: 0.5;
+    border:4px solid green;
 
+  }
+  #userDetails{
+    z-index: 10000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -90%);
+
+  }
+  #levelOptions{
+    z-index: 10000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  }
+  label{
+
+font-size: 30px;
+  }
+  #play{
+    z-index: 10000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  }  
+  #congrats{
+    z-index: 10000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  } 
+  #game_over{
+    z-index: 10000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  }
+  
+  h2, .h2 {
+font-size: 135px;
 }
-</style>
+  </style>
 </head>
 <body>
+<div id="loginInfo" class="col-md-2" style="padding:10px;float:right;display:none;">Hi ! <span id="loginName"></span></div>
+<div id="userDetails"  class="form-group">
+  <h2>SPLIT TILES</h2>
+  <div class="input-group">
+    <input type="text" class="form-control" id="username" placeholder="Enter your Name">
+    <span class="input-group-btn">
+      <button class="btn btn-success"  id ="userNameInput"  type="button">Rock On !!!!</button>
+    </span>
+  </div>
+
+</div>
+<div id="levelOptions"  style="display:none">
+  <input type="radio" class="icon-unchecked" id="levelButton" name="level" value="0"><label for="levelButton">Easy</label><br>
+  <input type="radio" class="icon-unchecked" id="levelButton" name="level" value="1"><label for="levelButton">Hard</label><br>
+  <input type="radio" class="icon-unchecked" id="levelButton" name="level" value="2"><label for="levelButton">Hardest</label><br>
+  <input type="radio" class="icon-unchecked" id="levelButton" name="level" value="3"><label for="levelButton">You wont win this one !!</label><br>
+  <button id="levelInput" class="btn btn-block btn-lg btn-warning">Submit</button>
+</div>
+
+<button style="display:none" class="btn col-lg-6 btn-success"  id="play">Play</button>
+<div id="display_video" style="display:none">
+    <video id="display-vid" controls onended="videoEnded()"> 
+       <source src="video/avengers.mp4" type="video/mp4" />
+    </video> 
+</div>
+
 <div style="display:none">
     <video id="source-vid" autoplay loop="true" controls muted> 
-       <source src="video/messi.mp4" type="video/mp4"/>
+       <source src="video/avengers.mp4" type="video/mp4"/>
     </video> 
     <audio class="audioControls" controls preload="none"> 
       <source src="audio/applause.mp3" type="audio/mpeg">
     </audio>
+    <audio class="audioClick" controls preload="none"> 
+      <source src="audio/click.mp3" type="audio/mpeg">
+    </audio>
+    <audio class="audioSwap" controls preload="none"> 
+      <source src="audio/okay.mp3" type="audio/mpeg">
+    </audio>
+    <audio class="audioEnded" controls preload="none"> 
+      <source src="audio/game_end.mp3" type="audio/mpeg">
+    </audio>
 </div>
 <div id="box"></div>
-<script src="http://code.jquery.com/jquery-1.7.min.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+
+<div id ="game_over" style="display:none"><h2>GAME OVER</h2><br>
+<button class="btn btn-primary" onclick="location.reload()">PLAY AGAIN</button></div>
+
+
+<div id = "congrats" style="display:none">  <h2>Congrats!!!</h2>
+<br><span><button class="btn btn-primary" onclick="location.reload()">PLAY AGAIN</button></span></div>
+<script src="js/jquery-1.7.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
 <script type="text/javascript">
     
-    ROWS = 3;
-    COLS = 3;
-    _video_width = 1280;
-    _video_height = 720;
-    tiles(_video_width,_video_height, ROWS, COLS);
-    
+    ROWS = 0;
+    COLS = 0;
+    _video_width = 854;
+    _video_height = 480;
+    _game_length = 0;
+    var timer;
     var video = $("#source-vid")[0];
-    update(video);
+    $(document).ready(function(){
+      $("#userNameInput").click(function(){
+          
+        console.log($("#username").val())
+        if($("#username").val() === "")
+            return
+        $("#userDetails").hide();
+        $('#loginInfo').show()
+        $('#loginName').html(''+$("#username").val())
+        $("#levelOptions").show();
+      });
+      $('#levelInput').click(function(){
+              
+        $("#levelOptions").hide ();
+        var level = $("input[name=level]:checked").val()
+        console.log(level)
+        if(level==0){
+          ROWS = 3;
+          COLS = 3;
+          _game_length = 120000;
+        }
+        else if(level == 1){
+          ROWS = 4;
+          COLS = 4;
+          _game_length = 120000;
+        } 
+        else if(level == 2){
+          ROWS = 5;
+          COLS = 5;
+          _game_length = 120000;
+        } 
+        else if(level == 3){
+          ROWS = 6;
+          COLS = 6;
+          _game_length = 60000;
+        }
+        $("#display_video").show();
+        $("#display-vid").get(0).play();
+
+      });
+      $('#play').click(function(){
+        $('#play').hide();
+          
+        setInterval(function (){ 
+          $('#box').hide();
+          $('.audioEnded').trigger('play')
+          $('#game_over').show();
+          $('#loginInfo').hide()
+        }, _game_length);
+        tiles(_video_width,_video_height, ROWS, COLS);
+        update(video);
+
+      });
+     
+    });
+
+    function videoEnded() {
+      $('#display_video').hide()
+      console.log('Video has ended!');
+      $('#play').show()
+    }
+    
 
     function update(video) {
 
       tiles(_video_width,_video_height,ROWS, COLS, video);
-      setTimeout(function() { update(video) }, 33);
+      setTimeout(function() { update(video) }, 24);
     }
 
     // Function to shuffle array 
@@ -81,12 +246,12 @@ canvas:hover{
           for(var ci = 0; ci < c; ci += 1) {
             // Create Tiles
             if (typeof source === 'undefined') {
-              var tile = $('<canvas class="tile" id="tile' + ri + ci + '" height="' + tileH + '" width="' + tileW + '"></canvas>').get(0);
+              var tile = $('<canvas class="split-tile" id="split-tile' + ri + ci + '" height="' + tileH + '" width="' + tileW + '"></canvas>').get(0);
               arr.push(tile);
             } else {
 
             // Add frames to tiles
-                var getit = $('#tile' + ri + ci).get(0);
+                var getit = $('#split-tile' + ri + ci).get(0);
                 context = getit.getContext('2d');
                 context.drawImage(source, ci*tileW, ri*tileH, tileW, tileH, 0, 0, tileW, tileH);
             }
@@ -112,11 +277,14 @@ canvas:hover{
     var _canvasOne , _cloneOne , _cloneTwo, _canvasTwo;
         
     $(document).on('click','canvas',function(){
+
       console.log(this.id);
       console.log($('#'+this.id).index())
 
       if(!selected){
         // If not selected Add this tile as canvasOne and increment selection variable
+        // Play Click Audio
+        $('.audioClick').trigger('play')
         _canvasOne = $('#'+this.id);
         _canvasOne.width -= 10; 
         _cloneOne = _canvasOne.clone();
@@ -127,7 +295,9 @@ canvas:hover{
       else{
         // If selected , clone Current Tiles
         // Swap both tiles with clones
-
+        // Play `Swapped` Audio
+        $('.audioSwap').trigger('play')
+      
         _canvasTwo = $('#'+this.id);
         console.log(_cloneOne )
         
@@ -140,6 +310,7 @@ canvas:hover{
         // Reset selection variable
         selected = 0;
       }
+      
     })
 
    
@@ -153,7 +324,7 @@ canvas:hover{
                 // If it equals current_row * col_no + current_coloumn
                 // Then iterate over next tile
                 // Else return null
-                var end_val = $('#tile' + ri + ci).index();
+                var end_val = $('#split-tile' + ri + ci).index();
                 console.log(end_val)
                 if(ri*COLS+ci !== end_val){
                   console.log('Not Okay')
@@ -165,11 +336,13 @@ canvas:hover{
         // Alert Game Over at the end 
         $(".audioControls").trigger('play');
         console.log('Game Over')
-        alert('Congrats ! Finished successfully ')
+        $('#box').hide();
+        $('#congrats').show();
+        $('#loginInfo').hide()
+       
 
     }
 
-    setInterval(function () {alert("Game Over")}, 180000);
     // Pause Video on Enter Key Press
     window.onkeyup = function(e){
       var video = $("#source-vid")[0]; 
