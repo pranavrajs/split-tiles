@@ -4,10 +4,9 @@
   <title>HTML5 Video Tiles Game</title> 
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
   <style>
-  @import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700);
   body{
     background: #ecf0f1;
-    font-family: 'Source Sans Pro';
+    font-family: 'Sawasdee';
   }
   #box{
     width:900px;
@@ -57,7 +56,7 @@
 
 font-size: 30px;
   }
-  #play{
+  #instructions{
     z-index: 10000;
   position: absolute;
   top: 50%;
@@ -83,7 +82,8 @@ font-size: 30px;
   }
   
   h2, .h2 {
-font-size: 135px;
+font-size: 130px;
+font-family: 'Sawasdee'
 }
   </style>
 </head>
@@ -107,16 +107,46 @@ font-size: 135px;
   <button id="levelInput" class="btn btn-block btn-lg btn-warning">Submit</button>
 </div>
 
-<button style="display:none" class="btn col-lg-6 btn-success"  id="play">Play</button>
+<div id="instructions"  style="display:none">
+  <p>
+    <ul>
+      <li>The tiles are in jumbled order</li>
+      <li>To swap 2 tiles click them one by one , Selection is indicated by a green border</li>
+      <li>Once you click on play timer will start running</li>
+      <li>You get 2 minutes in easy , 90 seconds in hard and 75 second in hardest</li>
+
+    </ul>
+  </p>
+  <br>
+  <button style="margin:0 auto" class="btn col-lg-6 btn-success"  id="play">Play</button>
+</div>
 <div id="display_video" style="display:none">
-    <video id="display-vid" controls onended="videoEnded()"> 
+    <video id="display-vid-1" style="display:none" controls onended="videoEnded()"> 
+       <source src="video/anthem.mp4" type="video/mp4" />
+    </video>
+    <video id="display-vid-2" style="display:none" controls onended="videoEnded()"> 
        <source src="video/avengers.mp4" type="video/mp4" />
-    </video> 
+    </video>
+    <video id="display-vid-3" style="display:none" controls onended="videoEnded()"> 
+       <source src="video/lamb.mp4" type="video/mp4" />
+    </video>
+    <video id="display-vid-4" style="display:none" controls onended="videoEnded()"> 
+       <source src="video/messi.mp4" type="video/mp4" />
+    </video>
 </div>
 
 <div style="display:none">
-    <video id="source-vid" autoplay loop="true" controls muted> 
-       <source src="video/avengers.mp4" type="video/mp4"/>
+    <video id="source-vid-1" autoplay loop="true" controls muted> 
+      <source src="video/anthem.mp4" type="video/mp4"/>
+    </video>
+    <video id="source-vid-2" autoplay loop="true" controls muted> 
+      <source src="video/avengers.mp4" type="video/mp4"/>
+    </video>
+    <video id="source-vid-3" autoplay loop="true" controls muted> 
+      <source src="video/lamb.mp4" type="video/mp4"/>
+    </video>
+    <video id="source-vid-4" autoplay loop="true" controls muted> 
+      <source src="video/messi.mp4" type="video/mp4"/>
     </video> 
     <audio class="audioControls" controls preload="none"> 
       <source src="audio/applause.mp3" type="audio/mpeg">
@@ -133,7 +163,7 @@ font-size: 135px;
 </div>
 <div id="box"></div>
 
-<div id ="game_over" style="display:none"><h2>GAME OVER</h2><br>
+<div id ="game_over" style="display:none"><h2>TIME OUT!!!</h2><br>
 <button class="btn btn-primary" onclick="location.reload()">PLAY AGAIN</button></div>
 
 
@@ -143,13 +173,18 @@ font-size: 135px;
 <script src="js/jquery-ui.min.js"></script>
 <script type="text/javascript">
     
-    ROWS = 0;
-    COLS = 0;
+    ROWS = 3;
+    COLS = 3;
     _video_width = 854;
     _video_height = 480;
     _game_length = 0;
     var timer;
-    var video = $("#source-vid")[0];
+    rand_num = getRandomInt(1,4);
+    console.log(rand_num)
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    var video = $("#source-vid-"+rand_num)[0];
     $(document).ready(function(){
       $("#userNameInput").click(function(){
           
@@ -174,12 +209,12 @@ font-size: 135px;
         else if(level == 1){
           ROWS = 4;
           COLS = 4;
-          _game_length = 120000;
+          _game_length = 90000;
         } 
         else if(level == 2){
           ROWS = 5;
           COLS = 5;
-          _game_length = 120000;
+          _game_length = 75000;
         } 
         else if(level == 3){
           ROWS = 6;
@@ -187,17 +222,21 @@ font-size: 135px;
           _game_length = 60000;
         }
         $("#display_video").show();
-        $("#display-vid").get(0).play();
+        $("#display-vid-"+rand_num).show();
+
+        $("#display-vid-"+rand_num).get(0).play();
 
       });
       $('#play').click(function(){
-        $('#play').hide();
+        $('#instructions').hide();
           
-        setInterval(function (){ 
+        timer = setInterval(function (){ 
           $('#box').hide();
           $('.audioEnded').trigger('play')
           $('#game_over').show();
-          $('#loginInfo').hide()
+          $('#loginInfo').hide();
+          clearInterval(timer);
+
         }, _game_length);
         tiles(_video_width,_video_height, ROWS, COLS);
         update(video);
@@ -209,7 +248,7 @@ font-size: 135px;
     function videoEnded() {
       $('#display_video').hide()
       console.log('Video has ended!');
-      $('#play').show()
+      $('#instructions').show()
     }
     
 
@@ -339,13 +378,13 @@ font-size: 135px;
         $('#box').hide();
         $('#congrats').show();
         $('#loginInfo').hide()
-       
+        clearInterval(timer);
 
     }
 
     // Pause Video on Enter Key Press
     window.onkeyup = function(e){
-      var video = $("#source-vid")[0]; 
+      var video = $("#source-vid-"+rand_num)[0]; 
       if(e.keyCode === 13)
           if(video.paused)
             video.play()
