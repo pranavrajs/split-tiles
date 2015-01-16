@@ -3,10 +3,11 @@
 <head>
   <title>HTML5 Video Tiles Game</title> 
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300|Archivo+Narrow' rel='stylesheet' type='text/css'>
   <style>
   body{
     background: #ecf0f1;
-    font-family: 'Sawasdee';
+    font-family: 'Archivo Narrow';
   }
   #box{
     width:900px;
@@ -82,8 +83,8 @@ font-size: 30px;
   }
   
   h2, .h2 {
-font-size: 130px;
-font-family: 'Sawasdee'
+font-size: 140px;
+font-family: 'Archivo Narrow '
 }
   </style>
 </head>
@@ -383,14 +384,14 @@ font-family: 'Sawasdee'
     }
 
     // Pause Video on Enter Key Press
-    window.onkeyup = function(e){
-      var video = $("#source-vid-"+rand_num)[0]; 
-      if(e.keyCode === 13)
-          if(video.paused)
-            video.play()
-          else
-            video.pause();
-    }
+    // window.onkeyup = function(e){
+    //   var video = $("#source-vid-"+rand_num)[0]; 
+    //   if(e.keyCode === 13)
+    //       if(video.paused)
+    //         video.play()
+    //       else
+    //         video.pause();
+    // }
 </script>
 </body>
 </html>
